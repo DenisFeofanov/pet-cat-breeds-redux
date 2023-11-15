@@ -3,9 +3,10 @@
 import Card from "@/components/Card";
 import PaginationButton from "@/components/PaginationButton";
 import { Character as CharacterInterface } from "@/interfaces/Character";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
-interface PaginationURLs {
+interface PaginationUrls {
   previous: string | null;
   next: string | null;
 }
@@ -15,29 +16,40 @@ const BASE_URL = "https://swapi.dev/api";
 export default function Home() {
   const [characters, setCharacters] = useState<CharacterInterface[]>([]);
   const [isFetching, setIsFetching] = useState(false);
-  const [paginationURLs, setPaginationURLs] = useState<PaginationURLs>({
+  const [paginationUrls, setPaginationUrls] = useState<PaginationUrls>({
     previous: null,
     next: null,
   });
+  const [query, setQuery] = useState("");
+  const [url, setUrl] = useState(`${BASE_URL}/people`);
 
-  function fetchCharacters(URL: string = `${BASE_URL}/people`) {
+  const charactersAreReady = !isFetching && characters.length > 0;
+
+  useEffect(() => {
     let ignore = false;
 
-    async function startFetching() {
+    const startFetching = async () => {
       setIsFetching(true);
-      // throw error
-      const response = await fetch(URL);
-      // throw error
-      const parsedResponse = await response.json();
 
-      if (!ignore) {
-        const { previous, next } = parsedResponse;
+      try {
+        const { data } = await axios(url, {
+          params: {
+            search: query,
+          },
+        });
 
+        if (!ignore) {
+          const { previous, next } = data;
+
+          setIsFetching(false);
+          setPaginationUrls({ previous, next });
+          setCharacters(data.results);
+        }
+      } catch (error) {
         setIsFetching(false);
-        setPaginationURLs({ previous, next });
-        setCharacters(parsedResponse.results);
+        console.log(error);
       }
-    }
+    };
 
     startFetching();
 
@@ -45,28 +57,27 @@ export default function Home() {
       ignore = true;
       setIsFetching(false);
     };
-  }
-
-  useEffect(fetchCharacters, []);
+  }, [url]);
 
   return (
-    <main className="min-h-screen p-24 flex flex-col justify-between">
+    <main className="min-h-screen p-24 flex flex-col justify-between ">
       <div>
-        <h1 className="font-bold text-5xl">Star Wars characters</h1>
+        <header className="flex justify-between">
+          <h1 className="font-bold text-5xl">Star Wars characters</h1>
 
-        {isFetching ? (
-          <h3 className="mt-16">Fetching users...</h3>
-        ) : (
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="Search..."
+          />
+        </header>
+
+        {isFetching && <h3 className="mt-16">Fetching users...</h3>}
+
+        {charactersAreReady && (
           <>
-            <button
-              className="mt-16"
-              type="button"
-              onClick={() => fetchCharacters()}
-            >
-              Reload characters
-            </button>
-
-            <ul className="mt-4">
+            <ul className="mt-16">
               {characters.map(character => (
                 <li key={character.name} className="my-4">
                   <Card character={character} />
@@ -77,22 +88,19 @@ export default function Home() {
         )}
       </div>
 
-      {!isFetching && (
+      {charactersAreReady && (
         <div className="flex gap-2">
           <PaginationButton
             onClick={() =>
-              paginationURLs.previous &&
-              fetchCharacters(paginationURLs.previous)
+              paginationUrls.previous && setUrl(paginationUrls.previous)
             }
-            disabled={!paginationURLs.previous}
+            disabled={!paginationUrls.previous}
           >
             Previous page
           </PaginationButton>
           <PaginationButton
-            onClick={() =>
-              paginationURLs.next && fetchCharacters(paginationURLs.next)
-            }
-            disabled={!paginationURLs.next}
+            onClick={() => paginationUrls.next && setUrl(paginationUrls.next)}
+            disabled={!paginationUrls.next}
           >
             Next page
           </PaginationButton>

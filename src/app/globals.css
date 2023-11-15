@@ -11,3 +11,8 @@ button {
 button:hover:enabled {
   border-color: black;
 }
+
+input {
+  border-width: 1px;
+  padding: 8px;
+}
