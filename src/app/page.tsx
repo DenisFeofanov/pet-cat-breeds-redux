@@ -59,7 +59,7 @@ export default function Home() {
         ) : (
           <>
             <button
-              className="border hover:border-black p-2 mt-16"
+              className="mt-16"
               type="button"
               onClick={() => fetchCharacters()}
             >
