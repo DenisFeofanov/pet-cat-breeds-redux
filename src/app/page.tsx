@@ -4,14 +4,14 @@ import Card from "@/components/Card";
 import PaginationButton from "@/components/PaginationButton";
 import { Character as CharacterInterface } from "@/interfaces/Character";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 interface PaginationUrls {
   previous: string | null;
   next: string | null;
 }
 
-const BASE_URL = "https://swapi.dev/api";
+const BASE_URL = "https://swapi.dev/api/people";
 
 export default function Home() {
   const [characters, setCharacters] = useState<CharacterInterface[]>([]);
@@ -21,7 +21,7 @@ export default function Home() {
     next: null,
   });
   const [query, setQuery] = useState("");
-  const [url, setUrl] = useState(`${BASE_URL}/people`);
+  const [url, setUrl] = useState(BASE_URL);
 
   const charactersAreReady = !isFetching && characters.length > 0;
 
@@ -32,11 +32,7 @@ export default function Home() {
       setIsFetching(true);
 
       try {
-        const { data } = await axios(url, {
-          params: {
-            search: query,
-          },
-        });
+        const { data } = await axios(url);
 
         if (!ignore) {
           const { previous, next } = data;
@@ -59,18 +55,29 @@ export default function Home() {
     };
   }, [url]);
 
+  function handleSearch(e: FormEvent) {
+    e.preventDefault();
+    if (!query) {
+      setUrl(BASE_URL);
+    } else {
+      setUrl(`${BASE_URL}/?search=${query}`);
+    }
+  }
+
   return (
     <main className="min-h-screen p-24 flex flex-col justify-between ">
       <div>
         <header className="flex justify-between">
           <h1 className="font-bold text-5xl">Star Wars characters</h1>
 
-          <input
-            type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Search..."
-          />
+          <form onSubmit={e => handleSearch(e)}>
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Search..."
+            />
+          </form>
         </header>
 
         {isFetching && <h3 className="mt-16">Fetching users...</h3>}
