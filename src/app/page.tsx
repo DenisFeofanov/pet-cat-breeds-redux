@@ -1,6 +1,7 @@
 "use client";
 
 import Card from "@/components/Card";
+import Info from "@/components/Info";
 import PaginationButton from "@/components/PaginationButton";
 import { Character as CharacterInterface } from "@/interfaces/Character";
 import axios from "axios";
@@ -22,13 +23,13 @@ export default function Home() {
   });
   const [query, setQuery] = useState("");
   const [url, setUrl] = useState(BASE_URL);
-
-  const charactersAreReady = !isFetching && characters.length > 0;
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     let ignore = false;
 
     const startFetching = async () => {
+      setIsError(false);
       setIsFetching(true);
 
       try {
@@ -37,14 +38,15 @@ export default function Home() {
         if (!ignore) {
           const { previous, next } = data;
 
-          setIsFetching(false);
           setPaginationUrls({ previous, next });
           setCharacters(data.results);
         }
       } catch (error) {
-        setIsFetching(false);
+        setIsError(true);
         console.log(error);
       }
+
+      setIsFetching(false);
     };
 
     startFetching();
@@ -64,6 +66,10 @@ export default function Home() {
     }
   }
 
+  const charactersAreReady = !isFetching && characters.length > 0;
+  const areSearchResultsEmpty =
+    url.includes("search") && !isFetching && characters.length === 0;
+
   return (
     <main className="min-h-screen p-24 flex flex-col justify-between ">
       <div>
@@ -80,7 +86,11 @@ export default function Home() {
           </form>
         </header>
 
-        {isFetching && <h3 className="mt-16">Fetching users...</h3>}
+        {isFetching && <Info>Fetching users...</Info>}
+
+        {isError && <Info>Something went wrong...</Info>}
+
+        {areSearchResultsEmpty && <Info>No character found...</Info>}
 
         {charactersAreReady && (
           <>
