@@ -13,17 +13,21 @@ interface PaginationUrls {
   next: string | null;
 }
 
+interface Data {
+  characters: CharacterInterface[];
+  paginationUrls: PaginationUrls;
+}
+
 const BASE_URL = "https://swapi.dev/api/people";
 
 export default function Home() {
-  const [characters, setCharacters] = useState<CharacterInterface[]>([]);
-  const [isFetching, setIsFetching] = useState(false);
-  const [paginationUrls, setPaginationUrls] = useState<PaginationUrls>({
-    previous: null,
-    next: null,
+  const [data, setData] = useState<Data>({
+    characters: [],
+    paginationUrls: { previous: null, next: null },
   });
-  const [url, setUrl] = useState(BASE_URL);
+  const [isFetching, setIsFetching] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [url, setUrl] = useState(BASE_URL);
   const [search, setSearch] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,8 +47,10 @@ export default function Home() {
         if (!ignore) {
           const { previous, next } = data;
 
-          setPaginationUrls({ previous, next });
-          setCharacters(data.results);
+          setData({
+            characters: data.results,
+            paginationUrls: { previous, next },
+          });
         }
       } catch (error) {
         setIsError(true);
@@ -62,8 +68,10 @@ export default function Home() {
     };
   }, [url, search]);
 
+  const { characters, paginationUrls } = data;
   const charactersAreReady = !isFetching && characters.length > 0;
-  const isSearchEmpty = !isFetching && search;
+  const isSearchEmpty =
+    !isFetching && Boolean(search) && characters.length === 0;
 
   return (
     <main className="min-h-screen p-24 flex flex-col justify-between ">
