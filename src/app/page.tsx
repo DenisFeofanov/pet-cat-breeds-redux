@@ -3,9 +3,10 @@
 import Card from "@/components/Card";
 import Info from "@/components/Info";
 import PaginationButton from "@/components/PaginationButton";
+import Search from "@/components/Search";
 import { Character as CharacterInterface } from "@/interfaces/Character";
 import axios from "axios";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface PaginationUrls {
   previous: string | null;
@@ -21,9 +22,9 @@ export default function Home() {
     previous: null,
     next: null,
   });
-  const [query, setQuery] = useState("");
   const [url, setUrl] = useState(BASE_URL);
   const [isError, setIsError] = useState(false);
+  const [search, setSearch] = useState<string | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -33,7 +34,11 @@ export default function Home() {
       setIsFetching(true);
 
       try {
-        const { data } = await axios(url);
+        const { data } = await axios(url, {
+          params: {
+            search,
+          },
+        });
 
         if (!ignore) {
           const { previous, next } = data;
@@ -55,20 +60,10 @@ export default function Home() {
       ignore = true;
       setIsFetching(false);
     };
-  }, [url]);
-
-  function handleSearch(e: FormEvent) {
-    e.preventDefault();
-    if (!query) {
-      setUrl(BASE_URL);
-    } else {
-      setUrl(`${BASE_URL}/?search=${query}`);
-    }
-  }
+  }, [url, search]);
 
   const charactersAreReady = !isFetching && characters.length > 0;
-  const areSearchResultsEmpty =
-    url.includes("search") && !isFetching && characters.length === 0;
+  const isSearchEmpty = !isFetching && search;
 
   return (
     <main className="min-h-screen p-24 flex flex-col justify-between ">
@@ -76,21 +71,14 @@ export default function Home() {
         <header className="flex justify-between">
           <h1 className="font-bold text-5xl">Star Wars characters</h1>
 
-          <form onSubmit={e => handleSearch(e)}>
-            <input
-              type="text"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder="Search..."
-            />
-          </form>
+          <Search onSearch={setSearch} />
         </header>
 
         {isFetching && <Info>Fetching users...</Info>}
 
         {isError && <Info>Something went wrong...</Info>}
 
-        {areSearchResultsEmpty && <Info>No character found...</Info>}
+        {isSearchEmpty && <Info>No character found...</Info>}
 
         {charactersAreReady && (
           <>
