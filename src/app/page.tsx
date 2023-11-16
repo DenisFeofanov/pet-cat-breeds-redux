@@ -1,7 +1,7 @@
 "use client";
 
 import Card from "@/components/Card";
-import Info from "@/components/Info";
+import InfoMessage from "@/components/InfoMessage";
 import PaginationButton from "@/components/PaginationButton";
 import Search from "@/components/Search";
 import { Character as CharacterInterface } from "@/interfaces/Character";
@@ -74,11 +74,11 @@ export default function Home() {
           <Search onSearch={setSearch} />
         </header>
 
-        {isFetching && <Info>Fetching users...</Info>}
+        {isFetching && <InfoMessage>Fetching users...</InfoMessage>}
 
-        {isError && <Info>Something went wrong...</Info>}
+        {isError && <InfoMessage>Something went wrong...</InfoMessage>}
 
-        {isSearchEmpty && <Info>No character found...</Info>}
+        {isSearchEmpty && <InfoMessage>No character found...</InfoMessage>}
 
         {charactersAreReady && (
           <>
