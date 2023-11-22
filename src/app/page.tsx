@@ -5,9 +5,9 @@ import InfoMessage from "@/components/InfoMessage";
 import PaginationButton from "@/components/PaginationButton";
 import Search from "@/components/Search";
 import { Query } from "@/interfaces/Query";
-import { fetchCharacters } from "@/lib/charactersSlice";
+import { fetchCharacters } from "@/lib/redux/charactersSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/store";
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "./hooks";
 
 export default function Home() {
   const [query, setQuery] = useState<Query>({ search: null, page: null });

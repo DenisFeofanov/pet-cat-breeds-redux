@@ -4,7 +4,7 @@ import { Query } from "@/interfaces/Query";
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { createAppAsyncThunk } from "./createAppAsyncThunk";
-import { extractQueryPage } from "./utils";
+import { extractQueryPage } from "../utils";
 
 interface ResponseData {
   results: Character[];
