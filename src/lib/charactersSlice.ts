@@ -40,6 +40,7 @@ const charactersSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(fetchCharacters.pending, state => {
       state.status = "isFetching";
+      state.error = null;
     });
     builder.addCase(
       fetchCharacters.fulfilled,

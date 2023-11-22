@@ -17,46 +17,16 @@ export default function Home() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchCharacters(query));
+    const startFetching = async () => {
+      try {
+        await dispatch(fetchCharacters(query)).unwrap();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    startFetching();
   }, [dispatch, query]);
-
-  // useEffect(() => {
-  //   let ignore = false;
-
-  //   const startFetching = async () => {
-  //     setIsError(false);
-  //     setIsFetching(true);
-
-  //     try {
-  //       const { data } = await axios(url, {
-  //         params: {
-  //           search,
-  //         },
-  //       });
-
-  //       if (!ignore) {
-  //         const { previous, next } = data;
-
-  //         setData({
-  //           characters: data.results,
-  //           paginationUrls: { previous, next },
-  //         });
-  //       }
-  //     } catch (error) {
-  //       setIsError(true);
-  //       console.log(error);
-  //     }
-
-  //     setIsFetching(false);
-  //   };
-
-  //   startFetching();
-
-  //   return () => {
-  //     ignore = true;
-  //     setIsFetching(false);
-  //   };
-  // }, [url, search]);
 
   function handleSetQuery(newQuery: Query) {
     // reset pagination on query change
