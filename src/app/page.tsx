@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 export default function Home() {
   const [query, setQuery] = useState<Query>({ search: null, page: null });
   const fetchStatus = useAppSelector(state => state.characters.status);
-  const characters = useAppSelector(state => state.characters.characters);
+  const characters = useAppSelector(state => state.characters.data);
   const pages = useAppSelector(state => state.characters.pages);
   const dispatch = useAppDispatch();
 

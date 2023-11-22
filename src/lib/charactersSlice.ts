@@ -1,12 +1,19 @@
 import { Character } from "@/interfaces/Character";
 import { Pages } from "@/interfaces/Pages";
 import { Query } from "@/interfaces/Query";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { createAppAsyncThunk } from "./createAppAsyncThunk";
 import { extractQueryPage } from "./utils";
 
+interface ResponseData {
+  results: Character[];
+  next: string | null;
+  previous: string | null;
+}
+
 interface State {
-  characters: Character[];
+  data: Character[];
   status: "idle" | "isFetching" | "succeeded" | "failed";
   error: string | null;
   pages: Pages;
@@ -14,12 +21,12 @@ interface State {
 
 const initialState: State = {
   status: "idle",
-  characters: [],
+  data: [],
   error: null,
   pages: { previous: null, next: null },
 };
 
-export const fetchCharacters = createAsyncThunk(
+export const fetchCharacters = createAppAsyncThunk(
   "characters/fetchCharacters",
   async ({ search, page }: Query) => {
     const { data } = await axios("https://swapi.dev/api/people", {
@@ -29,7 +36,7 @@ export const fetchCharacters = createAsyncThunk(
       },
     });
 
-    return data;
+    return data as ResponseData;
   }
 );
 
@@ -49,9 +56,10 @@ const charactersSlice = createSlice({
         { payload: { results, next: nextPageUrl, previous: previousPageUrl } }
       ) => {
         state.status = "succeeded";
-        state.characters = results;
-        state.pages.next = extractQueryPage(nextPageUrl);
-        state.pages.previous = extractQueryPage(previousPageUrl);
+        state.data = results;
+        state.pages.next = nextPageUrl && extractQueryPage(nextPageUrl);
+        state.pages.previous =
+          previousPageUrl && extractQueryPage(previousPageUrl);
       }
     );
     builder.addCase(fetchCharacters.rejected, state => {
