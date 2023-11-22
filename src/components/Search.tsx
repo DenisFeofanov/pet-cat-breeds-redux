@@ -1,7 +1,8 @@
+import { Query } from "@/interfaces/Query";
 import { FormEvent, useState } from "react";
 
 interface Props {
-  onSearch: (value: string | null) => void;
+  onSearch: (query: Query) => void;
 }
 
 export default function Search({ onSearch }: Props) {
@@ -9,7 +10,7 @@ export default function Search({ onSearch }: Props) {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onSearch(inputValue || null);
+    onSearch({ search: inputValue || null });
   }
 
   return (

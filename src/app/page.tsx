@@ -4,43 +4,21 @@ import Card from "@/components/Card";
 import InfoMessage from "@/components/InfoMessage";
 import PaginationButton from "@/components/PaginationButton";
 import Search from "@/components/Search";
-import { Character as CharacterInterface } from "@/interfaces/Character";
-import axios from "axios";
+import { Query } from "@/interfaces/Query";
+import { fetchCharacters } from "@/lib/charactersSlice";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import { fetchCharacters } from "@/lib/charactersSlice";
-
-interface PaginationUrls {
-  previous: string | null;
-  next: string | null;
-}
-
-interface Data {
-  characters: CharacterInterface[];
-  paginationUrls: PaginationUrls;
-}
-
-const BASE_URL = "https://swapi.dev/api/people";
 
 export default function Home() {
-  const [isFetching, setIsFetching] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [url, setUrl] = useState(BASE_URL);
-  const [search, setSearch] = useState<string | null>(null);
+  const [query, setQuery] = useState<Query>({ search: null, page: null });
   const fetchStatus = useAppSelector(state => state.characters.status);
-  const charactersFromRedux = useAppSelector(
-    state => state.characters.characters
-  );
-
-  const data: Data = {
-    characters: charactersFromRedux,
-    paginationUrls: { previous: null, next: null },
-  };
+  const characters = useAppSelector(state => state.characters.characters);
+  const pages = useAppSelector(state => state.characters.pages);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchCharacters(search));
-  }, [dispatch, url, search]);
+    dispatch(fetchCharacters(query));
+  }, [dispatch, query]);
 
   // useEffect(() => {
   //   let ignore = false;
@@ -80,10 +58,20 @@ export default function Home() {
   //   };
   // }, [url, search]);
 
-  const { characters, paginationUrls } = data;
+  function handleSetQuery(newQuery: Query) {
+    // reset pagination on query change
+    if (!newQuery.hasOwnProperty("page")) {
+      newQuery.page = null;
+    }
+
+    setQuery({ ...query, ...newQuery });
+  }
+
+  const isFetching = fetchStatus === "isFetching";
+  const isError = fetchStatus === "failed";
   const charactersAreReady = !isFetching && characters.length > 0;
   const isSearchEmpty =
-    !isFetching && Boolean(search) && characters.length === 0;
+    !isFetching && Boolean(query.search) && characters.length === 0;
 
   return (
     <main className="min-h-screen p-24 flex flex-col justify-between ">
@@ -91,10 +79,8 @@ export default function Home() {
         <header className="flex justify-between">
           <h1 className="font-bold text-5xl">Star Wars characters</h1>
 
-          <Search onSearch={setSearch} />
+          <Search onSearch={handleSetQuery} />
         </header>
-
-        <InfoMessage>{fetchStatus}</InfoMessage>
 
         {isFetching && <InfoMessage>Fetching users...</InfoMessage>}
 
@@ -119,16 +105,16 @@ export default function Home() {
         <div className="flex gap-2">
           <PaginationButton
             onClick={() =>
-              paginationUrls.previous && setUrl(paginationUrls.previous)
+              pages.previous && handleSetQuery({ page: pages.previous })
             }
-            disabled={!paginationUrls.previous}
+            disabled={!pages.previous}
           >
             Previous page
           </PaginationButton>
 
           <PaginationButton
-            onClick={() => paginationUrls.next && setUrl(paginationUrls.next)}
-            disabled={!paginationUrls.next}
+            onClick={() => pages.next && handleSetQuery({ page: pages.next })}
+            disabled={!pages.next}
           >
             Next page
           </PaginationButton>
