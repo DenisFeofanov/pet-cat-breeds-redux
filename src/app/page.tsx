@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 
 export default function Home() {
   const [query, setQuery] = useState<Query>({ search: null, page: null });
+  const [currentPage, setCurrentPage] = useState("1");
   const fetchStatus = useAppSelector(state => state.characters.status);
   const characters = useAppSelector(state => state.characters.data);
   const pages = useAppSelector(state => state.characters.pages);
@@ -35,6 +36,11 @@ export default function Home() {
     }
 
     setQuery({ ...query, ...newQuery });
+  }
+
+  function handlePageChange(page: string) {
+    setCurrentPage(page);
+    return handleSetQuery({ page });
   }
 
   const isFetching = fetchStatus === "isFetching";
@@ -72,18 +78,18 @@ export default function Home() {
       </div>
 
       {charactersAreReady && (
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <PaginationButton
-            onClick={() =>
-              pages.previous && handleSetQuery({ page: pages.previous })
-            }
+            onClick={() => pages.previous && handlePageChange(pages.previous)}
             disabled={!pages.previous}
           >
             Previous page
           </PaginationButton>
 
+          <span>{currentPage}</span>
+
           <PaginationButton
-            onClick={() => pages.next && handleSetQuery({ page: pages.next })}
+            onClick={() => pages.next && handlePageChange(pages.next)}
             disabled={!pages.next}
           >
             Next page
