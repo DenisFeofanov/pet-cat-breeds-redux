@@ -7,6 +7,8 @@ import Search from "@/components/Search";
 import { Character as CharacterInterface } from "@/interfaces/Character";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { fetchCharacters } from "@/lib/charactersSlice";
 
 interface PaginationUrls {
   previous: string | null;
@@ -21,52 +23,62 @@ interface Data {
 const BASE_URL = "https://swapi.dev/api/people";
 
 export default function Home() {
-  const [data, setData] = useState<Data>({
-    characters: [],
-    paginationUrls: { previous: null, next: null },
-  });
   const [isFetching, setIsFetching] = useState(false);
   const [isError, setIsError] = useState(false);
   const [url, setUrl] = useState(BASE_URL);
   const [search, setSearch] = useState<string | null>(null);
+  const fetchStatus = useAppSelector(state => state.characters.status);
+  const charactersFromRedux = useAppSelector(
+    state => state.characters.characters
+  );
+
+  const data: Data = {
+    characters: charactersFromRedux,
+    paginationUrls: { previous: null, next: null },
+  };
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    let ignore = false;
+    dispatch(fetchCharacters(search));
+  }, [dispatch, url, search]);
 
-    const startFetching = async () => {
-      setIsError(false);
-      setIsFetching(true);
+  // useEffect(() => {
+  //   let ignore = false;
 
-      try {
-        const { data } = await axios(url, {
-          params: {
-            search,
-          },
-        });
+  //   const startFetching = async () => {
+  //     setIsError(false);
+  //     setIsFetching(true);
 
-        if (!ignore) {
-          const { previous, next } = data;
+  //     try {
+  //       const { data } = await axios(url, {
+  //         params: {
+  //           search,
+  //         },
+  //       });
 
-          setData({
-            characters: data.results,
-            paginationUrls: { previous, next },
-          });
-        }
-      } catch (error) {
-        setIsError(true);
-        console.log(error);
-      }
+  //       if (!ignore) {
+  //         const { previous, next } = data;
 
-      setIsFetching(false);
-    };
+  //         setData({
+  //           characters: data.results,
+  //           paginationUrls: { previous, next },
+  //         });
+  //       }
+  //     } catch (error) {
+  //       setIsError(true);
+  //       console.log(error);
+  //     }
 
-    startFetching();
+  //     setIsFetching(false);
+  //   };
 
-    return () => {
-      ignore = true;
-      setIsFetching(false);
-    };
-  }, [url, search]);
+  //   startFetching();
+
+  //   return () => {
+  //     ignore = true;
+  //     setIsFetching(false);
+  //   };
+  // }, [url, search]);
 
   const { characters, paginationUrls } = data;
   const charactersAreReady = !isFetching && characters.length > 0;
@@ -81,6 +93,8 @@ export default function Home() {
 
           <Search onSearch={setSearch} />
         </header>
+
+        <InfoMessage>{fetchStatus}</InfoMessage>
 
         {isFetching && <InfoMessage>Fetching users...</InfoMessage>}
 
@@ -111,6 +125,7 @@ export default function Home() {
           >
             Previous page
           </PaginationButton>
+
           <PaginationButton
             onClick={() => paginationUrls.next && setUrl(paginationUrls.next)}
             disabled={!paginationUrls.next}
