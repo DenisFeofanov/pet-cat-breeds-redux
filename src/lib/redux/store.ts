@@ -5,9 +5,10 @@ import {
 } from "@reduxjs/toolkit";
 import charactersReducer from "./charactersSlice";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
+import catsReducer from "./catsSlice";
 
 export const reduxStore = configureStore({
-  reducer: { characters: charactersReducer },
+  reducer: { characters: charactersReducer, cats: catsReducer },
 });
 
 type DispatchFunc = () => AppDispatch;
