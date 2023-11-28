@@ -1,7 +1,7 @@
 import { Cat } from "@/interfaces/Cat";
 import { createSlice } from "@reduxjs/toolkit";
-import { createAppAsyncThunk } from "./createAppAsyncThunk";
 import axios from "axios";
+import { createAppAsyncThunk } from "./createAppAsyncThunk";
 
 interface State {
   data: Cat[];
@@ -15,19 +15,29 @@ const initialState: State = {
   error: null,
 };
 
-export const fetchCats = createAppAsyncThunk("cats/fetchCats", async () => {
-  const { data } = await axios(
-    "https://api.thecatapi.com/v1/breeds?limit=10&page=0",
-    {
+interface Query {
+  page?: number;
+}
+
+export const fetchCats = createAppAsyncThunk(
+  "cats/fetchCats",
+  async ({ page = 1 }: Query) => {
+    const { data } = await axios("/breeds", {
+      baseURL: "https://api.thecatapi.com/v1",
+      params: {
+        limit: "10",
+        // first page in API is 0
+        page: page - 1,
+      },
       headers: {
         "x-api-key":
           "live_NkLnCdw5YN4CH2KqCin2ZJRVGqqbNfnejhEdL4ltNVsPSvKYrGBgFByFuiasar7r",
       },
-    }
-  );
+    });
 
-  return data as Cat[];
-});
+    return data as Cat[];
+  }
+);
 
 const catsSlice = createSlice({
   name: "cats",
