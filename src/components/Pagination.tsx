@@ -10,7 +10,7 @@ export default function Pagination({
   onPreviousClick,
 }: Props) {
   return (
-    <div className="mt-4">
+    <div className="mb-4">
       <button onClick={onPreviousClick} type="button">
         Назад
       </button>

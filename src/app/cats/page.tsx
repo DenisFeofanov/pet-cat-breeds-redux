@@ -23,32 +23,47 @@ export default function Cats() {
   }
 
   const isLoading = status === "isFetching";
-  const succeeded = status === "success";
   const catsContent = isLoading ? (
     <p className="mt-4">Loading...</p>
   ) : (
-    cats &&
-    cats.map(cat => {
-      return (
-        <section className="flex gap-5 items-center mt-4" key={cat.id}>
-          {cat.image?.url ? (
-            <Image
-              className="max-w-xs"
-              src={cat.image.url}
-              width={cat.image.width}
-              height={cat.image.height}
-              alt="Cat image"
-            />
-          ) : (
-            <p>no image found</p>
-          )}
+    cats && (
+      <ul className="flex flex-col gap-10 mt-12 md:grid md:grid-cols-3 md:gap-5 xl:grid-cols-5">
+        {cats.map(cat => {
+          return (
+            <li key={cat.id}>
+              {cat.image?.url ? (
+                <Image
+                  src={cat.image.url}
+                  width={cat.image.width}
+                  height={cat.image.height}
+                  alt="Cat image"
+                  priority
+                />
+              ) : (
+                <p>no image found</p>
+              )}
 
-          <h3 className="text-xl">{cat.name}</h3>
-        </section>
-      );
-    })
+              <div className="flex flex-col gap-4 mt-4">
+                <h3 className="text-3xl">{cat.name}</h3>
+
+                <p>
+                  <i>Key personality traits:</i>
+                  <br />
+                  {cat.temperament}
+                </p>
+                <p>
+                  <i>Description:</i>
+                  <br />
+                  {cat.description}
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    )
   );
-  const pagination = succeeded && (
+  const pagination = (
     <Pagination
       page={page}
       onPreviousClick={() => changePageBy(-1)}
@@ -57,10 +72,10 @@ export default function Cats() {
   );
 
   return (
-    <div className="p-10">
-      {catsContent}
+    <div>
+      <header className="border-b border-black">{pagination}</header>
 
-      {pagination}
+      {catsContent}
     </div>
   );
 }

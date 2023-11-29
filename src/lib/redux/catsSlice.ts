@@ -25,7 +25,7 @@ export const fetchCats = createAppAsyncThunk(
     const { data } = await axios("/breeds", {
       baseURL: "https://api.thecatapi.com/v1",
       params: {
-        limit: "10",
+        limit: "5",
         // first page in API is 0
         page: page - 1,
       },

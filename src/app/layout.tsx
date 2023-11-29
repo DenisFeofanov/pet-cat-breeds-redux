@@ -15,7 +15,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <Providers>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+        <body className={`${inter.className} p-6 md:p-12`}>{children}</body>
       </html>
     </Providers>
   );
