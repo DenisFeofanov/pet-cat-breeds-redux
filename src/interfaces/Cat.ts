@@ -1,4 +1,4 @@
-export interface Cat {
+export interface Breed {
   weight: Weight;
   id: string;
   name: string;

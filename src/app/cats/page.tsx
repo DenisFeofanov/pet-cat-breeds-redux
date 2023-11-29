@@ -7,8 +7,9 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function Cats() {
-  const cats = useAppSelector(state => state.cats.data);
+  const cats = useAppSelector(state => state.cats.data.breeds);
   const status = useAppSelector(state => state.cats.status);
+  const pagesAmount = useAppSelector(state => state.cats.data.pagesAmount);
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
 
@@ -68,6 +69,7 @@ export default function Cats() {
       page={page}
       onPreviousClick={() => changePageBy(-1)}
       onNextClick={() => changePageBy(1)}
+      pagesAmount={pagesAmount}
     />
   );
   const error = status === "failed" && (

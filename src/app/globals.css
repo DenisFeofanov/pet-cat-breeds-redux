@@ -12,6 +12,10 @@ button:hover:enabled {
   border-color: black;
 }
 
+button:disabled {
+  color: grey;
+}
+
 input {
   border-width: 1px;
   padding: 8px;
