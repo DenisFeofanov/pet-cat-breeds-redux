@@ -70,11 +70,15 @@ export default function Cats() {
       onNextClick={() => changePageBy(1)}
     />
   );
+  const error = status === "failed" && (
+    <p className="my-4">Something went wrong...</p>
+  );
 
   return (
     <div>
       <header className="border-b border-black">{pagination}</header>
 
+      {error}
       {catsContent}
     </div>
   );

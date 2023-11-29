@@ -38,6 +38,7 @@ export const fetchCats = createAppAsyncThunk(
     return data as Cat[];
   }
 );
+1;
 
 const catsSlice = createSlice({
   name: "cats",
@@ -52,7 +53,8 @@ const catsSlice = createSlice({
       state.status = "success";
       state.data = payload;
     });
-    builder.addCase(fetchCats.rejected, state => {
+    builder.addCase(fetchCats.rejected, (state, action) => {
+      console.error(action);
       state.status = "failed";
     });
   },
