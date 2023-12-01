@@ -1,7 +1,7 @@
 "use client";
 
-import placeholderImage from "@/../public/imagePlaceholder.svg";
 import loadingGif from "@/../public/loadingAnimation.webp";
+import placeholderImage from "@/../public/imagePlaceholder.svg";
 import Pagination from "@/components/Pagination";
 import { fetchCats } from "@/lib/redux/catsSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/store";
