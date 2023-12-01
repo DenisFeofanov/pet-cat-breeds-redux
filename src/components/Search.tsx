@@ -1,25 +1,30 @@
-import { Query } from "@/interfaces/Query";
-import { FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 
 interface Props {
-  onSearch: (query: Query) => void;
+  onSearch: (value: string | null) => void;
 }
 
 export default function Search({ onSearch }: Props) {
-  const [inputValue, setInputValue] = useState("");
+  const [value, setValue] = useState("");
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onSearch({ search: inputValue || null });
+    onSearch(value || null);
+  }
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.value === "") onSearch(null);
+    setValue(e.target.value);
   }
 
   return (
-    <form onSubmit={e => handleSubmit(e)}>
+    <form onSubmit={e => handleSubmit(e)} role="search">
       <input
-        type="text"
-        value={inputValue}
-        onChange={e => setInputValue(e.target.value)}
+        type="search"
+        value={value}
+        onChange={e => handleChange(e)}
         placeholder="Search..."
+        aria-label="Search"
       />
     </form>
   );

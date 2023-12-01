@@ -1,4 +1,5 @@
 import { Breed } from "@/interfaces/Cat";
+import { Query } from "@/interfaces/Query";
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { createAppAsyncThunk } from "./createAppAsyncThunk";
@@ -15,10 +16,6 @@ const initialState: State = {
   error: null,
 };
 
-interface Query {
-  page?: number;
-}
-
 type ResponseHeaders = {
   "pagination-count": string;
   "pagination-page": string;
@@ -27,13 +24,14 @@ type ResponseHeaders = {
 
 export const fetchCats = createAppAsyncThunk(
   "cats/fetchCats",
-  async ({ page = 1 }: Query) => {
-    const response = await axios<Breed[]>("/breeds", {
+  async ({ page = 1, search }: Query) => {
+    const response = await axios<Breed[]>(`/breeds${search ? "/search" : ""}`, {
       baseURL: "https://api.thecatapi.com/v1",
       params: {
         limit: "5",
         // first page in API is 0
         page: page - 1,
+        q: search,
       },
       headers: {
         "x-api-key":

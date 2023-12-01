@@ -12,7 +12,7 @@ export default function Pagination({
   pagesAmount,
 }: Props) {
   return (
-    <div className="mb-4">
+    <div>
       <button onClick={onPreviousClick} type="button" disabled={page === 1}>
         Назад
       </button>

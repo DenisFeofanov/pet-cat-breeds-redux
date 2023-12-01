@@ -1,8 +1,11 @@
 "use client";
 
-import loadingGif from "@/../public/loadingAnimation.webp";
 import placeholderImage from "@/../public/imagePlaceholder.svg";
+import loadingGif from "@/../public/loadingAnimation.webp";
+import InfoMessage from "@/components/InfoMessage";
 import Pagination from "@/components/Pagination";
+import Search from "@/components/Search";
+import { Query } from "@/interfaces/Query";
 import { fetchCats } from "@/lib/redux/catsSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/store";
 import Image from "next/image";
@@ -13,16 +16,19 @@ export default function Cats() {
   const status = useAppSelector(state => state.cats.status);
   const pagesAmount = useAppSelector(state => state.cats.data.pagesAmount);
   const dispatch = useAppDispatch();
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState<Query>({ search: null, page: 1 });
 
   useEffect(() => {
-    dispatch(fetchCats({ page }));
-  }, [dispatch, page]);
+    dispatch(fetchCats(query));
+  }, [dispatch, query]);
 
   function changePageBy(amount: number) {
-    const newPage = page + amount;
-    setPage(newPage);
-    dispatch(fetchCats({ page: newPage }));
+    setQuery({ ...query, page: query.page + amount });
+  }
+
+  function handleSearch(text: string | null) {
+    if (query.search === text) return;
+    setQuery({ ...query, page: 1, search: text });
   }
 
   const isLoading = status === "isFetching";
@@ -64,15 +70,19 @@ export default function Cats() {
   );
   const pagination = (
     <Pagination
-      page={page}
+      page={query.page}
       onPreviousClick={() => changePageBy(-1)}
       onNextClick={() => changePageBy(1)}
-      pagesAmount={pagesAmount}
+      // force single page while searching, cause API doesn't search with pages
+      pagesAmount={query.search ? 1 : pagesAmount}
     />
   );
-  const error = status === "failed" && (
-    <p className="my-4">Something went wrong...</p>
-  );
+  let error;
+  if (status === "failed") {
+    error = <InfoMessage>Something went wrong...</InfoMessage>;
+  } else if (query.search && cats.length === 0) {
+    error = <InfoMessage>No breeds found</InfoMessage>;
+  }
   const loadingIndicator = (
     <Image
       className={`${
@@ -86,7 +96,10 @@ export default function Cats() {
 
   return (
     <>
-      <header className="border-b border-black">{pagination}</header>
+      <header className="border-b border-black flex justify-between items-center pb-4">
+        {pagination}
+        <Search onSearch={handleSearch} />
+      </header>
 
       {error}
       {loadingIndicator}
