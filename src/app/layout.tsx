@@ -21,7 +21,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           <main className="p-6 md:p-12">{children}</main>
 
           <footer className="border-t border-black text-right p-8">
-            Loading animation by Alwin Jolliffe
+            Loading animation by Alwin Jolliffe, placeholder images by Freepik
           </footer>
         </body>
       </html>

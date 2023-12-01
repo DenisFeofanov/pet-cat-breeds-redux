@@ -1,5 +1,6 @@
 "use client";
 
+import placeholderImage from "@/../public/imagePlaceholder.svg";
 import loadingGif from "@/../public/loadingAnimation.webp";
 import Pagination from "@/components/Pagination";
 import { fetchCats } from "@/lib/redux/catsSlice";
@@ -35,11 +36,11 @@ export default function Cats() {
                 src={cat.image.url}
                 width={cat.image.width}
                 height={cat.image.height}
-                alt="Cat image"
+                alt="Cat photo"
                 priority
               />
             ) : (
-              <p>no image found</p>
+              <Image src={placeholderImage} alt="Cat photo placeholder" />
             )}
 
             <div className="flex flex-col gap-4 mt-4">
