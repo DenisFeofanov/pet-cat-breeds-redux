@@ -16,9 +16,9 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
     <Providers>
       <html lang="en">
         <body
-          className={`${inter.className} min-h-screen bg-[#fef9ec] flex flex-col justify-between`}
+          className={`${inter.className} min-h-screen bg-[#fef9ec] grid grid-rows-[1fr_auto] p-6 md:p-12`}
         >
-          <main className="p-6 md:p-12">{children}</main>
+          <main>{children}</main>
 
           <footer className="border-t border-black text-right p-8">
             Loading animation by{" "}

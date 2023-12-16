@@ -2,6 +2,7 @@
 
 import placeholderImage from "@/../public/imagePlaceholder.svg";
 import loadingGif from "@/../public/loadingAnimation.webp";
+import Header from "@/components/Header";
 import InfoMessage from "@/components/InfoMessage";
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
@@ -96,10 +97,10 @@ export default function Cats() {
 
   return (
     <>
-      <header className="border-b border-black flex justify-between items-center pb-4">
+      <Header>
         {pagination}
         <Search onSearch={handleSearch} />
-      </header>
+      </Header>
 
       {error}
       {loadingIndicator}
