@@ -16,17 +16,25 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
     <Providers>
       <html lang="en">
         <body
-          className={`${inter.className} min-h-screen bg-[#fef9ec] grid grid-rows-[1fr_auto] p-6 md:p-12`}
+          className={`${inter.className} min-h-screen bg-[#fef9ec] grid grid-rows-[1fr_auto]`}
         >
           <main>{children}</main>
 
-          <footer className="border-t border-black text-right p-8">
+          <footer className="border-t border-black text-right p-8 mx-12">
             Loading animation by{" "}
-            <a target="_blank" href="https://www.alwinjolliffe.com/">
+            <a
+              className="underline"
+              target="_blank"
+              href="https://www.alwinjolliffe.com/"
+            >
               Alwin Jolliffe
             </a>
             , placeholder images by{" "}
-            <a target="_blank" href="https://www.freepik.com/">
+            <a
+              className="underline"
+              target="_blank"
+              href="https://www.freepik.com/"
+            >
               Freepik
             </a>
           </footer>

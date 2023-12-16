@@ -102,10 +102,12 @@ export default function Cats() {
         <Search onSearch={handleSearch} />
       </Header>
 
+      <section className="py-12 px-6 md:px-12">
       {error}
       {loadingIndicator}
 
       {catsContent}
+      </section>
     </>
   );
 }
