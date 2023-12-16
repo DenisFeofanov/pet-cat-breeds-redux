@@ -3,12 +3,11 @@ import {
   type Action,
   type ThunkAction,
 } from "@reduxjs/toolkit";
-import charactersReducer from "./charactersSlice";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import catsReducer from "./catsSlice";
 
 export const reduxStore = configureStore({
-  reducer: { characters: charactersReducer, cats: catsReducer },
+  reducer: { cats: catsReducer },
 });
 
 type DispatchFunc = () => AppDispatch;
