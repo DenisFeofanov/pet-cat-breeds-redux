@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/lib/providers";
+import Annotation from "@/components/Annotation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,8 +17,10 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
     <Providers>
       <html lang="en">
         <body
-          className={`${inter.className} min-h-screen bg-[#fef9ec] grid grid-rows-[1fr_auto]`}
+          className={`${inter.className} min-h-screen bg-[#fef9ec] grid grid-rows-[auto_1fr_auto]`}
         >
+          <Annotation />
+
           <main>{children}</main>
 
           <footer className="border-t border-black text-right p-8 mx-12">
