@@ -4,7 +4,7 @@ export default function Annotation() {
       The source code for this website is{" "}
       <a
         className="underline"
-        href="https://github.com/DenisFeofanov/pet-star-wars-redux"
+        href="https://github.com/DenisFeofanov/pet-cat-breeds-redux"
         target="_blank"
       >
         available on GitHub.

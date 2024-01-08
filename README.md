@@ -1,16 +1,16 @@
-# Redux Star Wars characters list
+# Redux cat breeds list
 
 Pet project for learning Redux, using Next.js
 
-Expore Star Wars characters
+Expore cat breeds
 
 ## Features
 
 - search
 - pagination
-- characters are saved to redux
+- cat breeds are saved to redux
 
-Demo: https://pet-star-wars-redux.vercel.app/
+Demo: https://pet-cat-breeds-redux.vercel.app/
 
 ![](preview.gif)
 
@@ -19,3 +19,4 @@ Demo: https://pet-star-wars-redux.vercel.app/
 - How to organize Redux store
 - How to change state through actions and reducers
 - How to use async logic with redux-thunk
+- How to favicon (including Safari/IE, Android/iOS shortcuts, dark theme and future resizes)
