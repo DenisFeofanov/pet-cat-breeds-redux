@@ -2,7 +2,6 @@
 
 import placeholderImage from "@/../public/imagePlaceholder.svg";
 import loadingGif from "@/../public/loadingAnimation.webp";
-import Header from "@/components/Header";
 import InfoMessage from "@/components/InfoMessage";
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
@@ -96,18 +95,18 @@ export default function Cats() {
   );
 
   return (
-    <>
-      <Header>
+    <div className="px-6 md:px-12">
+      <header className="border-b border-black flex justify-between items-center gap-4 py-6">
         {pagination}
         <Search onSearch={handleSearch} />
-      </Header>
+      </header>
 
-      <section className="py-12 px-6 md:px-12">
-      {error}
-      {loadingIndicator}
+      <section className="py-12">
+        {error}
+        {loadingIndicator}
 
-      {catsContent}
+        {catsContent}
       </section>
-    </>
+    </div>
   );
 }

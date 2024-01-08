@@ -12,19 +12,25 @@ export default function Pagination({
   pagesAmount,
 }: Props) {
   return (
-    <div>
-      <button onClick={onPreviousClick} type="button" disabled={page === 1}>
-        Назад
+    <div className="whitespace-nowrap">
+      <button
+        className="disabled:text-gray-300"
+        onClick={onPreviousClick}
+        type="button"
+        disabled={page === 1}
+      >
+        &lt;
       </button>
 
       <span className="mx-4">{page}</span>
 
       <button
+        className="disabled:text-gray-300"
         onClick={onNextClick}
         type="button"
         disabled={page === pagesAmount}
       >
-        Дальше
+        &gt;
       </button>
     </div>
   );

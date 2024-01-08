@@ -20,6 +20,7 @@ export default function Search({ onSearch }: Props) {
   return (
     <form onSubmit={e => handleSubmit(e)} role="search">
       <input
+        className="max-w-[9rem]"
         type="search"
         value={value}
         onChange={e => handleChange(e)}
