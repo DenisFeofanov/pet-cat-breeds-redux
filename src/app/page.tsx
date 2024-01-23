@@ -6,25 +6,18 @@ import InfoMessage from "@/components/InfoMessage";
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
 import { Query } from "@/interfaces/Query";
-import { fetchCats } from "@/lib/redux/catsSlice";
 import { useGetBreedsQuery } from "@/lib/redux/services/cats";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/store";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Cats() {
-  const cats = useAppSelector(state => state.cats.data.breeds);
-  const status = useAppSelector(state => state.cats.status);
-  const pagesAmount = useAppSelector(state => state.cats.data.pagesAmount);
-  const dispatch = useAppDispatch();
   const [query, setQuery] = useState<Query>({ search: null, page: 1 });
-  const { data, error: rtkError, isFetching } = useGetBreedsQuery(query);
-
-  console.log(data, isFetching, rtkError);
-
-  useEffect(() => {
-    dispatch(fetchCats(query));
-  }, [dispatch, query]);
+  const {
+    data: { cats, pagesAmount } = {},
+    error,
+    isFetching,
+    isError,
+  } = useGetBreedsQuery(query);
 
   function changePageBy(amount: number) {
     setQuery({ ...query, page: query.page + amount });
@@ -35,8 +28,7 @@ export default function Cats() {
     setQuery({ ...query, page: 1, search: text });
   }
 
-  const isLoading = status === "isFetching";
-  const catsContent = !isLoading && cats && (
+  const catsContent = !isFetching && cats && (
     <ul className="flex flex-col gap-10 mt-12 md:grid md:grid-cols-3 md:gap-5 xl:grid-cols-5">
       {cats.map(cat => {
         return (
@@ -78,19 +70,20 @@ export default function Cats() {
       onPreviousClick={() => changePageBy(-1)}
       onNextClick={() => changePageBy(1)}
       // force single page while searching, cause API doesn't search with pages
-      pagesAmount={query.search ? 1 : pagesAmount}
+      pagesAmount={pagesAmount || 1}
     />
   );
-  let error;
-  if (status === "failed") {
-    error = <InfoMessage>Something went wrong...</InfoMessage>;
-  } else if (query.search && cats.length === 0) {
-    error = <InfoMessage>No breeds found</InfoMessage>;
+  let errorMessage;
+  if (isError) {
+    errorMessage = <InfoMessage>Something went wrong...</InfoMessage>;
+    console.error(error);
+  } else if (query.search && cats?.length === 0) {
+    errorMessage = <InfoMessage>No breeds found</InfoMessage>;
   }
   const loadingIndicator = (
     <Image
       className={`${
-        isLoading || status === "idle" ? "opacity-1" : "opacity-0"
+        isFetching ? "opacity-1" : "opacity-0"
       } transition-opacity duration-500 absolute top-0 left-0 right-0 bottom-0 m-auto -z-10`}
       src={loadingGif}
       alt="loading..."
@@ -106,7 +99,7 @@ export default function Cats() {
       </header>
 
       <section className="py-12">
-        {error}
+        {errorMessage}
         {loadingIndicator}
 
         {catsContent}
