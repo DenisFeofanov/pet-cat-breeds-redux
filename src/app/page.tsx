@@ -7,6 +7,7 @@ import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
 import { Query } from "@/interfaces/Query";
 import { fetchCats } from "@/lib/redux/catsSlice";
+import { useGetBreedsQuery } from "@/lib/redux/services/cats";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/store";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -17,6 +18,9 @@ export default function Cats() {
   const pagesAmount = useAppSelector(state => state.cats.data.pagesAmount);
   const dispatch = useAppDispatch();
   const [query, setQuery] = useState<Query>({ search: null, page: 1 });
+  const { data, error: rtkError, isFetching } = useGetBreedsQuery(query);
+
+  console.log(data, isFetching, rtkError);
 
   useEffect(() => {
     dispatch(fetchCats(query));

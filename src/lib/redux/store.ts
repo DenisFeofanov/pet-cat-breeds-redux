@@ -3,11 +3,17 @@ import {
   type Action,
   type ThunkAction,
 } from "@reduxjs/toolkit";
-import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import catsReducer from "./catsSlice";
+import { catsApi } from "./services/cats";
 
 export const reduxStore = configureStore({
-  reducer: { cats: catsReducer },
+  reducer: {
+    cats: catsReducer,
+    [catsApi.reducerPath]: catsApi.reducer,
+  },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware().concat(catsApi.middleware),
 });
 
 type DispatchFunc = () => AppDispatch;
