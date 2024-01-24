@@ -6,7 +6,12 @@ import InfoMessage from "@/components/InfoMessage";
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
 import { Query } from "@/interfaces/Query";
-import { useGetBreedsQuery } from "@/lib/redux/services/cats";
+import {
+  useGetBreedsQuery,
+  useSearchBreedsQuery,
+} from "@/lib/redux/services/cats";
+import { skipToken } from "@reduxjs/toolkit/query";
+
 import Image from "next/image";
 import { useState } from "react";
 
@@ -18,14 +23,17 @@ export default function Cats() {
     isFetching,
     isError,
   } = useGetBreedsQuery(query);
+  const [search, setSearch] = useState<string | null>(null);
+  const { data: searchData, isFetching: isSearching } = useSearchBreedsQuery(
+    search ?? skipToken
+  );
 
   function changePageBy(amount: number) {
     setQuery({ ...query, page: query.page + amount });
   }
 
   function handleSearch(text: string | null) {
-    if (query.search === text) return;
-    setQuery({ ...query, page: 1, search: text });
+    setSearch(text);
   }
 
   const catsContent = !isFetching && cats && (
