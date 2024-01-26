@@ -9,7 +9,7 @@ export default function Search({ onSearch }: Props) {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onSearch(value || null);
+    onSearch(value.trim() || null);
   }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {

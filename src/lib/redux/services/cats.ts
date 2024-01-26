@@ -38,21 +38,14 @@ export const catsApi = createApi({
         };
       },
     }),
-    searchBreeds: builder.query<Result, string>({
-      query: search => ({
+    searchBreeds: builder.query<Breed[], { search: string }>({
+      query: ({ search }) => ({
         url: `/breeds/search`,
         params: {
           limit: BREEDS_PER_PAGE,
           q: search,
         },
       }),
-      transformResponse(apiResponse: Breed[]) {
-        const pagesAmount = Math.ceil(apiResponse.length / BREEDS_PER_PAGE);
-        return {
-          breeds: apiResponse,
-          pagesAmount,
-        };
-      },
     }),
   }),
 });

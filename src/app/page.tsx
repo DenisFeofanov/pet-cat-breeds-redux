@@ -5,7 +5,6 @@ import InfoMessage from "@/components/InfoMessage";
 import { Loading } from "@/components/Loading";
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
-import { Breed } from "@/interfaces/Cat";
 import {
   useGetBreedsQuery,
   useSearchBreedsQuery,
@@ -17,51 +16,35 @@ export default function Cats() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState<string | null>(null);
   const {
-    data: { breeds, pagesAmount: mainPagesAmount } = {},
+    currentData: searchedBreeds,
+    isFetching: isFetchingSearch,
+    isError: isSearchError,
+    isUninitialized,
+  } = useSearchBreedsQuery(search === null ? skipToken : { search });
+  const isSearching = !isUninitialized;
+  const {
+    data: { pagesAmount: mainPagesAmount } = {},
+    currentData: { breeds } = {},
     error,
     isFetching,
     isError,
-    isSuccess,
-  } = useGetBreedsQuery({ page });
-  const {
-    currentData: {
-      breeds: searchedBreeds,
-      pagesAmount: searchPagesAmount,
-    } = {},
-    isFetching: isSearching,
-    isSuccess: hasSearched,
-    isError: isSearchError,
-  } = useSearchBreedsQuery(search ?? skipToken);
+  } = useGetBreedsQuery(isSearching ? skipToken : { page });
 
   function changePageBy(amount: number) {
     setPage(page + amount);
   }
 
   function handleSearch(text: string | null) {
+    setPage(1);
     setSearch(text);
   }
 
-  const isLoading = isFetching || isSearching;
-  let content: Breed[] | null = null,
-    pagesAmount = searchPagesAmount || mainPagesAmount || 1,
-    errorMessage: JSX.Element | null = null;
-  switch (true) {
-    case isLoading:
-      content = null;
-      break;
-    case hasSearched:
-      content = searchedBreeds!;
-      break;
-    case isSuccess:
-      content = breeds!;
-      break;
-    case isError || isSearchError:
-      errorMessage = <InfoMessage>Something went wrong...</InfoMessage>;
-      console.error(error);
-      break;
-    default:
-      content = null;
-      errorMessage = null;
+  const content = isSearching ? searchedBreeds : breeds;
+  const pagesAmount = (isSearching ? 1 : mainPagesAmount) || 1;
+  let errorMessage: string | null = null;
+  if (isError || isSearchError) {
+    console.error(error);
+    errorMessage = "Something went wrong...";
   }
 
   return (
@@ -77,8 +60,9 @@ export default function Cats() {
       </header>
 
       <section className="py-12">
-        {errorMessage}
-        <Loading isLoading={isLoading} />
+        <InfoMessage>{errorMessage}</InfoMessage>
+
+        <Loading isLoading={isFetching || isFetchingSearch} />
 
         {content?.length === 0 && (
           <InfoMessage>
