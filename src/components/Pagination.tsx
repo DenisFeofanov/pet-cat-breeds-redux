@@ -28,7 +28,7 @@ export default function Pagination({
         className="disabled:text-gray-300"
         onClick={onNextClick}
         type="button"
-        disabled={page === pagesAmount}
+        disabled={page >= pagesAmount}
       >
         &gt;
       </button>

@@ -7,6 +7,6 @@ export interface ResponseHeaders extends Headers {
 }
 
 export interface Result {
-  cats: Breed[];
+  breeds: Breed[];
   pagesAmount: number;
 }

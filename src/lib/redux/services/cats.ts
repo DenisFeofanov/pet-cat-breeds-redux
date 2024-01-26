@@ -1,6 +1,5 @@
 import { ResponseHeaders, Result } from "@/interfaces/Api";
 import { Breed } from "@/interfaces/Cat";
-import { Query } from "@/interfaces/Query";
 import { BREEDS_PER_PAGE } from "@/lib/constants";
 import { extractPagesAmount } from "@/lib/utils";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -18,14 +17,13 @@ export const catsApi = createApi({
     },
   }),
   endpoints: builder => ({
-    getBreeds: builder.query<Result, Query>({
-      query: ({ page = 1, search }) => ({
-        url: `/breeds${search ? "/search" : ""}`,
+    getBreeds: builder.query<Result, { page: number }>({
+      query: ({ page = 1 }) => ({
+        url: `/breeds`,
         params: {
           limit: BREEDS_PER_PAGE,
           // first page in API is 0
           page: page - 1,
-          q: search,
         },
         headers: {
           accept: "application/json",
@@ -34,7 +32,10 @@ export const catsApi = createApi({
       transformResponse(apiResponse: Breed[], meta) {
         const headers = meta?.response?.headers as ResponseHeaders;
 
-        return { cats: apiResponse, pagesAmount: extractPagesAmount(headers) };
+        return {
+          breeds: apiResponse,
+          pagesAmount: extractPagesAmount(headers),
+        };
       },
     }),
     searchBreeds: builder.query<Result, string>({
@@ -48,7 +49,7 @@ export const catsApi = createApi({
       transformResponse(apiResponse: Breed[]) {
         const pagesAmount = Math.ceil(apiResponse.length / BREEDS_PER_PAGE);
         return {
-          cats: apiResponse,
+          breeds: apiResponse,
           pagesAmount,
         };
       },

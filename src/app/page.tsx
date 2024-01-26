@@ -1,116 +1,92 @@
 "use client";
 
-import placeholderImage from "@/../public/imagePlaceholder.svg";
-import loadingGif from "@/../public/loadingAnimation.webp";
+import { BreedsList } from "@/components/BreedsList";
 import InfoMessage from "@/components/InfoMessage";
+import { Loading } from "@/components/Loading";
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
-import { Query } from "@/interfaces/Query";
+import { Breed } from "@/interfaces/Cat";
 import {
   useGetBreedsQuery,
   useSearchBreedsQuery,
 } from "@/lib/redux/services/cats";
 import { skipToken } from "@reduxjs/toolkit/query";
-
-import Image from "next/image";
 import { useState } from "react";
 
 export default function Cats() {
-  const [query, setQuery] = useState<Query>({ search: null, page: 1 });
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState<string | null>(null);
   const {
-    data: { cats, pagesAmount } = {},
+    data: { breeds, pagesAmount: mainPagesAmount } = {},
     error,
     isFetching,
     isError,
-  } = useGetBreedsQuery(query);
-  const [search, setSearch] = useState<string | null>(null);
-  const { data: searchData, isFetching: isSearching } = useSearchBreedsQuery(
-    search ?? skipToken
-  );
+    isSuccess,
+  } = useGetBreedsQuery({ page });
+  const {
+    currentData: {
+      breeds: searchedBreeds,
+      pagesAmount: searchPagesAmount,
+    } = {},
+    isFetching: isSearching,
+    isSuccess: hasSearched,
+    isError: isSearchError,
+  } = useSearchBreedsQuery(search ?? skipToken);
 
   function changePageBy(amount: number) {
-    setQuery({ ...query, page: query.page + amount });
+    setPage(page + amount);
   }
 
   function handleSearch(text: string | null) {
     setSearch(text);
   }
 
-  const catsContent = !isFetching && cats && (
-    <ul className="flex flex-col gap-10 mt-12 md:grid md:grid-cols-3 md:gap-5 xl:grid-cols-5">
-      {cats.map(cat => {
-        return (
-          <li key={cat.id}>
-            {cat.image?.url ? (
-              <Image
-                src={cat.image.url}
-                width={cat.image.width}
-                height={cat.image.height}
-                alt="Cat photo"
-                priority
-              />
-            ) : (
-              <Image src={placeholderImage} alt="Cat photo placeholder" />
-            )}
-
-            <div className="flex flex-col gap-4 mt-4">
-              <h3 className="text-3xl">{cat.name}</h3>
-
-              <p>
-                <i>Key personality traits:</i>
-                <br />
-                {cat.temperament}
-              </p>
-              <p>
-                <i>Description:</i>
-                <br />
-                {cat.description}
-              </p>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
-  );
-  const pagination = (
-    <Pagination
-      page={query.page}
-      onPreviousClick={() => changePageBy(-1)}
-      onNextClick={() => changePageBy(1)}
-      // force single page while searching, cause API doesn't search with pages
-      pagesAmount={pagesAmount || 1}
-    />
-  );
-  let errorMessage;
-  if (isError) {
-    errorMessage = <InfoMessage>Something went wrong...</InfoMessage>;
-    console.error(error);
-  } else if (query.search && cats?.length === 0) {
-    errorMessage = <InfoMessage>No breeds found</InfoMessage>;
+  const isLoading = isFetching || isSearching;
+  let content: Breed[] | null = null,
+    pagesAmount = searchPagesAmount || mainPagesAmount || 1,
+    errorMessage: JSX.Element | null = null;
+  switch (true) {
+    case isLoading:
+      content = null;
+      break;
+    case hasSearched:
+      content = searchedBreeds!;
+      break;
+    case isSuccess:
+      content = breeds!;
+      break;
+    case isError || isSearchError:
+      errorMessage = <InfoMessage>Something went wrong...</InfoMessage>;
+      console.error(error);
+      break;
+    default:
+      content = null;
+      errorMessage = null;
   }
-  const loadingIndicator = (
-    <Image
-      className={`${
-        isFetching ? "opacity-1" : "opacity-0"
-      } transition-opacity duration-500 absolute top-0 left-0 right-0 bottom-0 m-auto -z-10`}
-      src={loadingGif}
-      alt="loading..."
-      priority
-    />
-  );
 
   return (
     <div className="px-6 md:px-12">
       <header className="border-b border-black flex justify-between items-center gap-4 py-6">
-        {pagination}
+        <Pagination
+          page={page}
+          onPreviousClick={() => changePageBy(-1)}
+          onNextClick={() => changePageBy(1)}
+          pagesAmount={pagesAmount}
+        />
         <Search onSearch={handleSearch} />
       </header>
 
       <section className="py-12">
         {errorMessage}
-        {loadingIndicator}
+        <Loading isLoading={isLoading} />
 
-        {catsContent}
+        {content?.length === 0 && (
+          <InfoMessage>
+            {search ? "No breeds found for this search" : "No breeds found"}
+          </InfoMessage>
+        )}
+
+        {content && <BreedsList breeds={content} />}
       </section>
     </div>
   );
